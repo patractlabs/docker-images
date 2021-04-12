@@ -43,14 +43,17 @@ RUN set -eux; \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
+# install nodejs 14
+  curl -sL https://deb.nodesource.com/setup_14.x  | bash - && \
+  apt-get -y install nodejs && \
+  npm install -g npm && \
+  npm install --ignore-scripts -g yarn && \
+  node -v && \
+  npm -v && \
 # apt clean up
 	apt-get autoremove -y && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/* \
-# install nodejs 14
-  curl -sL https://deb.nodesource.com/setup_14.x  | bash - && \
-  apt-get -y install nodejs && \
-  npm install -g npm
 # cache handler
 ENV	RUSTC_WRAPPER=sccache
 # show backtraces

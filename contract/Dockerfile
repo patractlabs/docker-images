@@ -4,19 +4,6 @@ ARG REGISTRY_PATH=paritytech
 
 FROM ${REGISTRY_PATH}/base-ci:latest
 
-# metadata
-LABEL io.parity.image.authors="devops-team@parity.io" \
-	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="${REGISTRY_PATH}/contracts-ci-linux" \
-	io.parity.image.description="Inherits from base-ci-linux:latest. \
-llvm-dev, clang, zlib1g-dev, npm, yarn, wabt, binaryen. \
-rust nightly, rustfmt, clippy, rust-src, solang, canvas-node" \
-	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/contracts-ci-linux/Dockerfile" \
-	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/contracts-ci-linux/README.md" \
-	io.parity.image.revision="${VCS_REF}" \
-	io.parity.image.created="${BUILD_DATE}"
 
 WORKDIR /builds
 
@@ -25,10 +12,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # install tools and dependencies
 RUN set -eux; \
-	apt-get -y update && \
-	apt-get install -y --no-install-recommends \
-		zlib1g-dev npm wabt llvm-dev && \
-	npm install --ignore-scripts -g yarn && \
+	# apt-get -y update && \
+	# apt-get install -y --no-install-recommends \
+	# 	zlib1g-dev npm wabt llvm-dev && \
+	# npm install --ignore-scripts -g yarn && \
+
 # binaryen is needed by cargo-contract for optimizing Wasm files
 # we fetch the latest version number from the GitHub API and use that release
 	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases/latest | \
