@@ -47,7 +47,7 @@ RUN set -eux; \
 	apt-get autoremove -y && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/* \
-install nodejs 14
+# install nodejs 14
   curl -sL https://deb.nodesource.com/setup_14.x  | bash - && \
   apt-get -y install nodejs && \
   npm install -g npm
