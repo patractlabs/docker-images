@@ -45,8 +45,7 @@ RUN set -eux; \
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
 # install nodejs 14
   curl -sL https://deb.nodesource.com/setup_14.x  | bash - && \
-  apt-get -y install nodejs && \
-  npm install -g npm && \
+  apt-get -y install nodejs build-essential && \
   npm install --ignore-scripts -g yarn && \
   node -v && \
   npm -v && \
