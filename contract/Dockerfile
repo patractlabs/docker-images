@@ -1,8 +1,8 @@
 ARG VCS_REF=master
 ARG BUILD_DATE=""
-ARG REGISTRY_PATH=paritytech
+ARG REGISTRY_PATH=redspot
 
-FROM ${REGISTRY_PATH}/base-ci:latest
+FROM ${REGISTRY_PATH}/base:latest
 
 
 WORKDIR /builds
@@ -12,11 +12,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # install tools and dependencies
 RUN set -eux; \
-	# apt-get -y update && \
-	# apt-get install -y --no-install-recommends \
-	# 	zlib1g-dev npm wabt llvm-dev && \
-	# npm install --ignore-scripts -g yarn && \
-
 # binaryen is needed by cargo-contract for optimizing Wasm files
 # we fetch the latest version number from the GitHub API and use that release
 	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases/latest | \
@@ -35,18 +30,11 @@ RUN set -eux; \
 	rustup default nightly && \
 	cargo install pwasm-utils-cli --bin wasm-prune && \
 	cargo install cargo-contract && \
-# tried v0.1.5 and the latest master - both fail with https://github.com/hyperledger-labs/solang/issues/314
-	cargo install --git https://github.com/hyperledger-labs/solang --tag v0.1.2 && \
-# download the latest canvas-node binary
-	curl -L "https://gitlab.parity.io/parity/canvas-node/-/jobs/artifacts/master/raw/artifacts/canvas/canvas?job=build" \
-		-o /usr/local/cargo/bin/canvas && \
-	chmod +x /usr/local/cargo/bin/canvas && \
 # versions
 	yarn --version && \
 	rustup show && \
 	cargo --version && \
-	solang --version && \
-	canvas --version && \
+	cargo contract --version && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
