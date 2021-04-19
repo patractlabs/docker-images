@@ -30,11 +30,16 @@ RUN set -eux; \
 	rustup default nightly && \
 	cargo install pwasm-utils-cli --bin wasm-prune && \
 	cargo install cargo-contract && \
+# download the latest canvas-node binary
+	curl -L "https://gitlab.parity.io/parity/canvas-node/-/jobs/artifacts/master/raw/artifacts/canvas/canvas?job=build" \
+		-o /usr/local/cargo/bin/canvas && \
+	chmod +x /usr/local/cargo/bin/canvas && \
 # versions
 	yarn --version && \
 	rustup show && \
 	cargo --version && \
 	cargo contract --version && \
+  canvas --version && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
