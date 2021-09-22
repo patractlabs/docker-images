@@ -14,8 +14,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
-		zlib1g-dev npm wabt llvm-dev && \
-	npm install --ignore-scripts -g yarn && \
+		zlib1g-dev wabt llvm-dev && \
 # `binaryen` is needed by `cargo-contract` for optimizing Wasm files.
 # We fetch the latest release which contains a Linux binary. There is
 # currently an issue with not all releases containing a Linux binary
