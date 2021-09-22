@@ -12,9 +12,16 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # install tools and dependencies
 RUN set -eux; \
-# binaryen is needed by cargo-contract for optimizing Wasm files
-# we fetch the latest version number from the GitHub API and use that release
-	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases/latest | \
+	apt-get -y update && \
+	apt-get install -y --no-install-recommends \
+		zlib1g-dev npm wabt llvm-dev && \
+	npm install --ignore-scripts -g yarn && \
+# `binaryen` is needed by `cargo-contract` for optimizing Wasm files.
+# We fetch the latest release which contains a Linux binary. There is
+# currently an issue with not all releases containing a Linux binary
+# (https://github.com/WebAssembly/binaryen/issues/4148). Once that one
+# is fixed we can always use the latest release again.
+	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases | \
 		egrep --only-matching 'https://github.com/WebAssembly/binaryen/releases/download/version_[0-9]+/binaryen-version_[0-9]+-x86_64-linux.tar.gz' | \
 		head -n1 | \
 		xargs curl -L -O && \
@@ -30,16 +37,18 @@ RUN set -eux; \
 	rustup default nightly && \
 	cargo install pwasm-utils-cli --bin wasm-prune && \
 	cargo install cargo-contract && \
-# download the latest canvas-node binary
-	curl -L "https://gitlab.parity.io/parity/canvas-node/-/jobs/artifacts/master/raw/artifacts/canvas/canvas?job=build" \
-		-o /usr/local/cargo/bin/canvas && \
-	chmod +x /usr/local/cargo/bin/canvas && \
+# tried v0.1.5 and the latest master - both fail with https://github.com/hyperledger-labs/solang/issues/314
+	cargo install --git https://github.com/hyperledger-labs/solang --tag v0.1.2 && \
+# download the latest `substrate-contracts-node` binary
+	curl -L "https://gitlab.parity.io/parity/substrate-contracts-node/-/jobs/artifacts/master/raw/artifacts/substrate-contracts-node-linux/substrate-contracts-node?job=build-linux" \
+		-o /usr/local/cargo/bin/substrate-contracts-node && \
+	chmod +x /usr/local/cargo/bin/substrate-contracts-node && \
 # versions
 	yarn --version && \
 	rustup show && \
 	cargo --version && \
-	cargo contract --version && \
-  canvas --version && \
+	solang --version && \
+	substrate-contracts-node --version && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
